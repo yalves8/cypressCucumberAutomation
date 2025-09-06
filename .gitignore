@@ -1,0 +1,31 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+
+# VS Code
+.vscode/
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage (caso use cobertura de testes)
+coverage/
+
+# Relatórios de testes (ex: cucumber-html-reports)
+reports/
