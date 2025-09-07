@@ -7,7 +7,6 @@ module.exports = defineConfig({
   e2e: {
     specPattern: "**/*.feature",
     async setupNodeEvents(on, config) {
-      // Para suportar arquivos .feature
       await addCucumberPreprocessorPlugin(on, config);
 
       on(
