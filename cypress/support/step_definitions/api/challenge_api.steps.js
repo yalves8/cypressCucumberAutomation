@@ -15,7 +15,7 @@ Before(() => {
 });
 
 Given("that valid data exists to create a user", () => {
-    //userName = `qa_user_${Date.now()}`;
+    return cy.log(`User data prepared: ${userName}`);
 });
 
 When("the user is created via API", () => {
