@@ -1,4 +1,7 @@
 Feature: Browser Windows
+  As a user
+  I want to interact with the Browser Windows
+  So that it can be displayed a popup
 
   Scenario: Open a new browser window and validate content
     Given the DemoQA website is open

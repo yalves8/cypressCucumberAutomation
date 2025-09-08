@@ -1,4 +1,4 @@
-import { Given, When, Then, Before } from "@badeball/cypress-cucumber-preprocessor";
+import { When, Then, Before } from "@badeball/cypress-cucumber-preprocessor";
 import { faker } from '@faker-js/faker'
 
 When("a new record is created with random data", () => {
