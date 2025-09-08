@@ -1,16 +1,9 @@
 import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
 
-Given("that the DemoQA home page is accessed", () => {
-  cy.visit("/");
-});
-
 When('the {string} option is accessed', (menu) => {
   cy.contains(menu).click();
 });
 
-When('the {string} submenu is clicked', (submenu) => {
-  cy.contains(submenu).click();
-});
 
 When("the entire form is filled with random values", () => {
   const firstName = "Yasmin";
