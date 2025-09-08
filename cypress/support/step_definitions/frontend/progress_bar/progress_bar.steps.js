@@ -1,41 +1,60 @@
-import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
-
-When('the "Start" button is clicked', () => {
-  cy.get('#startStopButton').click();
-});
+import { When, Then } from "@badeball/cypress-cucumber-preprocessor";
 
 When('the progress bar is stopped before reaching 25%', () => {
-  cy.get('#progressBar').then(($bar) => {
-    const bar = $bar[0];
-    const interval = setInterval(() => {
-      const value = parseInt(bar.getAttribute('aria-valuenow'));
-      if (value >= 25) {
-        cy.get('#startStopButton').click(); // stop
-        clearInterval(interval);
+  const checkProgress = () => {
+    cy.get('#progressBar').invoke('text').then((text) => {
+      const numValue = Number(text.replace('%', '').trim());
+        
+      if (!isNaN(numValue) && numValue >= 20 && numValue < 25) {
+        cy.get('#startStopButton').click();
+      } else if (numValue < 25) {
+        cy.wait(100);
+        checkProgress();
       }
-    }, 50);
-  });
+    });
+  };
+
+  checkProgress();
 });
 
 Then('the progress bar value should be less than or equal to 25%', () => {
   cy.get('#progressBar')
-    .invoke('attr', 'aria-valuenow')
-    .then((value) => {
-      expect(parseInt(value)).to.be.lte(25);
+    .invoke('text')
+    .then((text) => {
+      const numValue = Number(text.replace('%', '').trim());
+      expect(numValue).to.be.at.most(25);
     });
 });
 
 When('the progress bar reaches 100%', () => {
-  cy.get('#startStopButton').click(); // restart
-  cy.get('#progressBar', { timeout: 10000 }).should(($bar) => {
-    const value = parseInt($bar.attr('aria-valuenow'));
-    expect(value).to.eq(100);
-  });
+  const waitFor100 = () => {
+    cy.get('#progressBar')
+      .invoke('text')
+      .then((text) => {
+        const numValue = Number(text.replace('%', '').trim());
+
+        if (numValue < 100) {
+          cy.wait(100);
+          waitFor100();
+        } else {
+          expect(numValue).to.eq(100);
+        }
+      });
+  };
+
+  waitFor100();
 });
 
 Then('the progress bar is reset', () => {
-  cy.get('#resetButton').click();
+  cy.get('#resetButton')
+    .should('be.visible')
+    .and('not.be.disabled')
+    .click();
+
   cy.get('#progressBar')
-    .invoke('attr', 'aria-valuenow')
-    .should('eq', '0');
+    .invoke('text')
+    .then((text) => {
+      const numValue = Number(text.replace('%', '').trim());
+      expect(numValue).to.eq(0);
+    });
 });

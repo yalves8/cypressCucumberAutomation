@@ -10,6 +10,6 @@ Scenario: Start, stop at 25%, complete, and reset the progress bar
     And the "Start" button is clicked
     And the progress bar is stopped before reaching 25%
     Then the progress bar value should be less than or equal to 25%
-    When the "Start" button is clicked again
+    When the "Start" button is clicked
     And the progress bar reaches 100%
     Then the progress bar is reset
