@@ -1,27 +1,7 @@
-import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+import { When, Then } from "@badeball/cypress-cucumber-preprocessor";
 
-// Given("the DemoQA website is open", () => {
-//   cy.visit("/");
-// });
-
-// When('the {string} section is accessed', (section) => {
-//   cy.contains(section).scrollIntoView().click({ force: true });
-// });
-var url = '';
 When('the main menu submenu {string} is clicked', (submenu) => {
   cy.contains(submenu).scrollIntoView().click({ force: true });
-});
-
-When('the {string} button is clicked', (button) => {
-  cy.url().then((originalUrl) => {
-    cy.window().then((win) => {
-      cy.stub(win, 'open').callsFake((url) => {
-        cy.visit(url);
-      }).as("popup");
-    });
-
-    cy.contains('button', button).scrollIntoView().click({ force: true });
-  });
 });
 
 Then("a new window should be opened", () => {
