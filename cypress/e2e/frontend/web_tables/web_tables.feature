@@ -11,4 +11,14 @@ Feature: Web Tables Management on DemoQA
     When the record is deleted
     Then the record should no longer exist in the table
 
+  @run
+  Scenario: Insert 12 new records and delete them
+    Given the DemoQA website is open
+    When the "Elements" section is accessed
+    And the "Web Tables" submenu is clicked
+    And 12 new records are created
+    Then all 12 new records should appear in the table
+    When all new records are deleted
+    Then none of the new records should remain in the table
+
 
