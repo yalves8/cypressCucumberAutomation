@@ -21,8 +21,7 @@ When('the {string} button is clicked', (button) => {
     cy.get('#startStopButton').click();
     
   } else {
-    cy.contains('button', button).scrollIntoView().click({ force: true });
-    cy.url().then(() => {
+    cy.url().then((originalUrl) => {
     cy.window().then((win) => {
       cy.stub(win, 'open').callsFake((url) => {
         cy.visit(url);
