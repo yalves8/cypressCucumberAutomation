@@ -19,6 +19,9 @@ module.exports = defineConfig({
 
       return config;
     },
+    "env": {
+        "TAGS": "@run"
+    },
     baseUrl: "https://demoqa.com",
   },
 });
