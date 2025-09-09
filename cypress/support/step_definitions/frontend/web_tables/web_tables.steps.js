@@ -131,52 +131,71 @@ Then('all {int} new records should appear in the table', () => {
 });
 
 When('all new records are deleted', () => {
-  createdRecords.forEach((name) => {
-    const deleteRecord = () => {
-      let deleted = false;
+  cy.get('@createdRecords').then((records) => {
 
-      cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
-        $rows.each((_, row) => {
-          if (row.innerText.includes(name)) {
-            cy.wrap(row).find('[title="Delete"]').click({ force: true });
-            deleted = true;
-          }
-        });
-
-        cy.get('.-next').then(($next) => {
-          if (!$next.hasClass('-disabled') && !deleted) {
-            cy.wrap($next).click({ force: true }).then(() => deleteRecord());
-          }
-        });
+    // Função para voltar à primeira página usando o botão Previous
+    const goToFirstPage = () => {
+      cy.get('.-previous > button.-btn').then($prev => {
+        if (!$prev.prop('disabled')) {
+          cy.wrap($prev).click({ force: true }).then(goToFirstPage);
+        }
       });
     };
 
-    deleteRecord();
+    goToFirstPage();
+
+    const deleteRecord = (recordName) => {
+      let deleted = false;
+
+      const checkPage = () => {
+        cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
+          $rows.each((_, row) => {
+            if (Cypress.$(row).text().includes(recordName)) {
+              cy.wrap(row).find('[title="Delete"]').click({ force: true });
+              deleted = true;
+            }
+          });
+        }).then(() => {
+          cy.get('.-next > button.-btn').then(($next) => {
+            if (!deleted && !$next.prop('disabled')) {
+              cy.wrap($next).click({ force: true }).then(checkPage);
+            } else if (!deleted && $next.prop('disabled')) {
+              throw new Error(`Record "${recordName}" could not be deleted`);
+            }
+          });
+        });
+      };
+
+      checkPage();
+    };
+
+    cy.wrap(records).each((recordName) => {
+      deleteRecord(recordName);
+    });
   });
 });
 
 Then('none of the new records should remain in the table', () => {
-  createdRecords.forEach((name) => {
-    let found = false;
+  cy.get('@createdRecords').then((records) => {
 
-    const searchInPages = () => {
-      cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
-        $rows.each((_, row) => {
-          if (row.innerText.includes(name)) found = true;
+    const checkRecordOnAllPages = (recordName) => {
+      const checkPage = () => {
+        cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
+          const found = Array.from($rows).some(row => row.innerText.includes(recordName));
+          
+          cy.get('.-next > button.-btn').then(($next) => {
+            if (found) {
+              throw new Error(`Record "${recordName}" still exists in the table`);
+            } else if (!$next.prop('disabled')) {
+              cy.wrap($next).click({ force: true }).then(checkPage);
+            }
+          });
         });
+      };
 
-        cy.get('.-next').then(($next) => {
-          if (!$next.hasClass('-disabled') && !found) {
-            cy.wrap($next).click({ force: true }).then(() => searchInPages());
-          }
-        });
-      });
+      checkPage();
     };
 
-    searchInPages();
-
-    cy.wrap(null).then(() => {
-      expect(found).to.be.false;
-    });
+    records.forEach(recordName => checkRecordOnAllPages(recordName));
   });
 });
